@@ -76,12 +76,54 @@ def GetFootprints():
                     os.makedirs(directory)
                 if not os.path.isfile(footprint_filepath): 
                     counter = counter + 1
-                    urllib.urlretrieve(footprint_url, footprint_filepath)
-                    if counter % 20 == 0:
-                        time.sleep(40)
+                    while True:
+                        try:
+                            urllib.urlretrieve(footprint_url, footprint_filepath)
+                            bar.next()
+                            break
+                        except:
+                            print 'cooldown 20 seconds...'
+                            time.sleep(30)
+                            
+                    #if counter % 20 == 0:
+                    #    time.sleep(40)
+                #bar.next()
+        bar.finish()   
+
+def MergeFoorprints():
+    counter = 0
+
+    footprints_filename = 'footprints.geojson'
+    if os.path.exists(footprints_filename):
+      os.remove(footprints_filename)
+
+  
+    
+    with open("bucket_contents.file", "rb") as f:
+        bucket_contents = pickle.load(f)
+        
+        
+        #calculate count of footprints for progressbar
+        
+        keys_count = 0
+        for element in bucket_contents:
+            if element['Key'].endswith('_footprint.json'):
+                keys_count = keys_count + 1
+
+        bar = Bar('Processing', max=keys_count, suffix='%(index)d/%(max)d - %(percent).1f%% - %(eta)ds')
+        for element in bucket_contents:
+            #rint key
+            if element['Key'].endswith('_footprint.json'):
+                cmd = 'ogrmerge.py -o {footprints_filename} {source_filename} -single -update -append -src_layer_field_name key'.format(footprints_filename=footprints_filename, source_filename=element['Key'])
+                cmd = cmd + ' -src_layer_field_content  {AUTO_NAME}'
+                #print cmd
+                counter = counter + 1
                 bar.next()
-        bar.finish()        
+                os.system(cmd)
+        bar.finish()
 
 if __name__ == '__main__':
     #GetCapabilities()
-    GetFootprints()
+    #GetFootprints()
+    MergeFoorprints()
+    
