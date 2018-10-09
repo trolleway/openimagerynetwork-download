@@ -79,6 +79,7 @@ def GetFootprints():
                     while True:
                         try:
                             urllib.urlretrieve(footprint_url, footprint_filepath)
+                            time.sleep(0.4)
                             bar.next()
                             break
                         except:
