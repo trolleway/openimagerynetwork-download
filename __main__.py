@@ -93,8 +93,9 @@ def GetFootprints():
 
 def MergeFoorprints():
     counter = 0
+    temp_dir = 'files'
 
-    footprints_filename = 'footprints.geojson'
+    footprints_filename = 'footprints.gpkg'
     if os.path.exists(footprints_filename):
       os.remove(footprints_filename)
 
@@ -107,15 +108,20 @@ def MergeFoorprints():
         #calculate count of footprints for progressbar
         
         keys_count = 0
+
         for element in bucket_contents:
             if element['Key'].endswith('_footprint.json'):
                 keys_count = keys_count + 1
 
-        bar = Bar('Processing', max=keys_count, suffix='%(index)d/%(max)d - %(percent).1f%% - %(eta)ds')
+        bar = Bar('Merging OAM footprints', max=keys_count, suffix='%(index)d/%(max)d - %(percent).1f%% - %(eta)ds')
         for element in bucket_contents:
             #rint key
             if element['Key'].endswith('_footprint.json'):
-                cmd = 'ogrmerge.py -o {footprints_filename} {source_filename} -single -update -append -src_layer_field_name key'.format(footprints_filename=footprints_filename, source_filename=element['Key'])
+                if counter == 0:
+                    cmd = 'ogr2ogr -overwrite {output_filename} {source_filename}'.format(output_filename=footprints_filename, source_filename=os.path.join(temp_dir,element['Key']))
+                    os.system(cmd)
+                    
+                cmd = 'ogrmerge.py -o {footprints_filename} {source_filename} -single -update -append -src_layer_field_name key'.format(footprints_filename=footprints_filename, source_filename=os.path.join(temp_dir,element['Key']))
                 cmd = cmd + ' -src_layer_field_content  {AUTO_NAME}'
                 #print cmd
                 counter = counter + 1
@@ -127,4 +133,3 @@ if __name__ == '__main__':
     #GetCapabilities()
     #GetFootprints()
     MergeFoorprints()
-    
