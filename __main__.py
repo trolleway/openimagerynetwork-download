@@ -6,6 +6,9 @@ import urllib
 from progress.bar import Bar
 import time
 
+
+
+    
 def GetCapabilities():
 
     bucket_contents = list()
@@ -60,7 +63,7 @@ def GetFootprints():
             if element['Key'].endswith('_footprint.json'):
                 keys_count = keys_count + 1
 
-        bar = Bar('Processing', max=keys_count, suffix='%(index)d/%(max)d - %(percent).1f%% - %(eta)ds')
+        bar = Bar('Download OAM footprints', max=keys_count, suffix='%(index)d/%(max)d - %(percent).1f%% - %(eta)ds')
         for element in bucket_contents:
             #rint key
             if element['Key'].endswith('_footprint.json'):
@@ -94,8 +97,22 @@ def GetFootprints():
 def MergeFoorprints():
     counter = 0
     temp_dir = 'files'
+    import json
+    
+    base_url = 'http://oin-hotosm.s3.amazonaws.com/'
+    geojsonHeader='''    
+{
+"type": "FeatureCollection",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+                                                                                
+"features": [
+'''
+    geojsonFooter='''
+]
+}
+'''
 
-    footprints_filename = 'footprints.gpkg'
+    footprints_filename = 'footprints.geojson'
     if os.path.exists(footprints_filename):
       os.remove(footprints_filename)
 
@@ -104,7 +121,6 @@ def MergeFoorprints():
     with open("bucket_contents.file", "rb") as f:
         bucket_contents = pickle.load(f)
         
-        
         #calculate count of footprints for progressbar
         
         keys_count = 0
@@ -112,22 +128,57 @@ def MergeFoorprints():
         for element in bucket_contents:
             if element['Key'].endswith('_footprint.json'):
                 keys_count = keys_count + 1
+                
+        fs = open(footprints_filename,'w')
+        fs.write(geojsonHeader+"\n")
+        fs.close()
+        fs = open(footprints_filename,'a')    
+
+        start_record = 1
+        #start_record = 2731
+        end_record = float('Inf')
 
         bar = Bar('Merging OAM footprints', max=keys_count, suffix='%(index)d/%(max)d - %(percent).1f%% - %(eta)ds')
         for element in bucket_contents:
+
             #rint key
             if element['Key'].endswith('_footprint.json'):
-                if counter == 0:
-                    cmd = 'ogr2ogr -overwrite {output_filename} {source_filename}'.format(output_filename=footprints_filename, source_filename=os.path.join(temp_dir,element['Key']))
-                    os.system(cmd)
-                    
-                cmd = 'ogrmerge.py -o {footprints_filename} {source_filename} -single -update -append -src_layer_field_name key'.format(footprints_filename=footprints_filename, source_filename=os.path.join(temp_dir,element['Key']))
-                cmd = cmd + ' -src_layer_field_content  {AUTO_NAME}'
-                #print cmd
-                counter = counter + 1
+                with open(os.path.join(temp_dir,element['Key'])) as jsonfile:
+                    counter = counter + 1
+                    if counter < start_record:
+                       bar.next()
+                       continue
+                    data = json.load(jsonfile)
+                    try:
+                        geometry = data['features'][0]['geometry']
+                    except:
+                        print 'geometry read error at ' + element['Key'] + ' skipped'
+                        bar.next()
+                        continue
+                        
+                    #if 1==1: 
+                    if data['features'][0]['geometry']['coordinates'][0][0][0] == float('Inf'):
+                        print "\n signal"
+                        print str(data['features'][0]['geometry']['coordinates'][0][0][0]).isdigit
+                        
+                        bar.next()
+                        #quit()
+                        continue
+                    geojsonString='{ "type": "Feature", "properties": { "key": "%(key)s", "url_geotiff": "%(url_geotiff)s" }, "geometry":  %(geometry)s }, '
+                    exportString = geojsonString % {"key" : element['Key'],'url_geotiff' : base_url + element['Key'] ,"geometry" : json.dumps(geometry)}
+                    fs.write(exportString+"\n")
+                    print ' '+str(counter)
+
+
+                if counter == end_record:
+                    bar.next()
+                    break
                 bar.next()
-                os.system(cmd)
+                #os.system(cmd)
         bar.finish()
+
+        fs.write(geojsonFooter+"\n")
+        fs.close()
 
 if __name__ == '__main__':
     #GetCapabilities()
