@@ -1,2 +1,4 @@
 untangle
 progress
+geojson
+shapely

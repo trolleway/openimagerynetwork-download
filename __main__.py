@@ -46,7 +46,27 @@ def GetCapabilities():
     with open("bucket_contents.file", "wb") as f:
         pickle.dump(bucket_contents, f, pickle.HIGHEST_PROTOCOL)
 
-def GetFootprints():
+def DebugCapabilities():
+    
+    base_url = 'http://oin-hotosm.s3.amazonaws.com/'
+    temp_dir = 'files'
+    counter = 0
+    
+    with open("bucket_contents.file", "rb") as f:
+        bucket_contents = pickle.load(f)
+        
+        
+        #calculate count of footprints 
+        
+        keys_count = 0
+        for element in bucket_contents:
+            if element['Key'].endswith('meta.json'):
+                keys_count = keys_count + 1
+                print base_url + element['Key']
+        print keys_count
+
+                
+def GetFiles(endswith='_meta.json'):
     
     base_url = 'http://oin-hotosm.s3.amazonaws.com/'
     temp_dir = 'files'
@@ -60,13 +80,13 @@ def GetFootprints():
         
         keys_count = 0
         for element in bucket_contents:
-            if element['Key'].endswith('_footprint.json'):
+            if element['Key'].endswith(endswith):
                 keys_count = keys_count + 1
 
         bar = Bar('Download OAM footprints', max=keys_count, suffix='%(index)d/%(max)d - %(percent).1f%% - %(eta)ds')
         for element in bucket_contents:
             #rint key
-            if element['Key'].endswith('_footprint.json'):
+            if element['Key'].endswith(endswith):
                 footprint_url = base_url+element['Key']
                 footprint_filepath = os.path.join(temp_dir,element['Key'])
                 footprint_filepath = footprint_filepath.replace('/', os.sep)
@@ -93,7 +113,6 @@ def GetFootprints():
                     #    time.sleep(40)
                 #bar.next()
         bar.finish()   
-
 def MergeFoorprints():
     counter = 0
     temp_dir = 'files'
@@ -179,8 +198,87 @@ def MergeFoorprints():
 
         fs.write(geojsonFooter+"\n")
         fs.close()
+        
+        
+        
+def MergeMeta():
+    counter = 0
+    temp_dir = 'files'
+    import json
+    
+    base_url = 'http://oin-hotosm.s3.amazonaws.com/'
+
+
+    footprints_filename = 'footprints.geojson'
+    if os.path.exists(footprints_filename):
+      os.remove(footprints_filename)
+
+  
+    
+    with open("bucket_contents.file", "rb") as f:
+        bucket_contents = pickle.load(f)
+        #calculate count of meta files for progressbar
+        keys_count = 0
+
+        for element in bucket_contents:
+            if element['Key'].endswith('_meta.json'):
+                keys_count = keys_count + 1
+                
+
+
+        start_record = 1
+        #start_record = 2731
+        end_record = float('Inf')
+        
+        import csv
+        csvfile = open('footprints.csv', "wb")
+
+        spamwriter = csv.writer(csvfile, delimiter=',',
+                            quotechar='"', quoting=csv.QUOTE_MINIMAL)
+        spamwriter.writerow(['counter','footprint'])
+
+        bar = Bar('Merging OAM footprints', max=keys_count, suffix='%(index)d/%(max)d - %(percent).1f%% - %(eta)ds')
+        for element in bucket_contents:
+
+            #rint key
+            if element['Key'].endswith('_meta.json'):
+                with open(os.path.join(temp_dir,element['Key'])) as jsonfile:
+                    counter = counter + 1
+                    if counter < start_record:
+                       bar.next()
+                       continue
+                    data = json.load(jsonfile)
+                    try:
+                        footprint = data['footprint']
+                    except:
+                        print 'geometry read error at ' + element['Key'] + ' skipped'
+                        bar.next()
+                        continue
+                        
+                    #if 1==1: 
+                    if data['footprint'] == float('Inf'):
+                        print "\n signal"
+                        print str(data['features'][0]['geometry']['coordinates'][0][0][0]).isdigit
+                        
+                        bar.next()
+                        #quit()
+                        continue
+
+                   
+                    spamwriter.writerow([counter,str(footprint)])
+
+
+                if counter == end_record:
+                    bar.next()
+                    break
+                bar.next()
+                #os.system(cmd)
+        bar.finish()
+
+        csvfile.close()
 
 if __name__ == '__main__':
     #GetCapabilities()
-    #GetFootprints()
-    MergeFoorprints()
+    #DebugCapabilities()
+    #GetFiles('_meta.json')
+    MergeMeta()
