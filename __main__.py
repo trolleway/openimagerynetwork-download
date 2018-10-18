@@ -230,12 +230,30 @@ def MergeMeta():
         #start_record = 2731
         end_record = float('Inf')
         
-        import csv
+        import unicodecsv as csv
         csvfile = open('footprints.csv', "wb")
 
         spamwriter = csv.writer(csvfile, delimiter=',',
-                            quotechar='"', quoting=csv.QUOTE_MINIMAL)
-        spamwriter.writerow(['counter','footprint'])
+                            quotechar='"', quoting=csv.QUOTE_MINIMAL,encoding='utf-8')
+        spamwriter.writerow(['counter',
+        'uuid',
+        'title',
+        'footprint',
+        'gsd',
+        'file_size',
+        'acquisition_start',
+        'platform',
+        'provider',
+        'contact',
+        'properties.sensor',
+        'properties.thumbnail',
+        'properties.tms',
+        'properties.wmts',
+        'uploaded_at',
+        
+        
+        
+        ])
 
         bar = Bar('Merging OAM footprints', max=keys_count, suffix='%(index)d/%(max)d - %(percent).1f%% - %(eta)ds')
         for element in bucket_contents:
@@ -264,8 +282,20 @@ def MergeMeta():
                         #quit()
                         continue
 
-                   
-                    spamwriter.writerow([counter,str(footprint)])
+                    #print data
+                    print data.get('uploaded_at')
+                    spamwriter.writerow([counter,data['uuid'],data['title'],
+                    str(footprint),
+                    data['gsd'],
+                    data['file_size'],data['acquisition_start'],data['acquisition_end'],
+                    data['platform'],data['provider'],data['contact'],
+                    data['properties'].get('sensor'),
+                    data['properties'].get('thumbnail'),
+                    data['properties'].get('tms'),
+                    data['properties'].get('wmts'),
+                    str(data.get('uploaded_at'))
+                    ]
+                    )
 
 
                 if counter == end_record:
