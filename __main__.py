@@ -242,6 +242,7 @@ def MergeMeta():
         'gsd',
         'file_size',
         'acquisition_start',
+        'acquisition_end',
         'platform',
         'provider',
         'contact',
