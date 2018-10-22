@@ -66,7 +66,7 @@ def DebugCapabilities():
         print keys_count
 
                 
-def GetFiles(endswith='_meta.json'):
+def GetFiles(endswith='_meta.json', last=0):
     
     base_url = 'http://oin-hotosm.s3.amazonaws.com/'
     temp_dir = 'files'
@@ -99,6 +99,9 @@ def GetFiles(endswith='_meta.json'):
                     os.makedirs(directory)
                 if not os.path.isfile(footprint_filepath): 
                     counter = counter + 1
+                    if (last > 0) and (counter < (keys_count - last)):
+                        bar.next()
+                        continue
                     while True:
                         try:
                             urllib.urlretrieve(footprint_url, footprint_filepath)
@@ -309,7 +312,7 @@ def MergeMeta():
         csvfile.close()
 
 if __name__ == '__main__':
-    #GetCapabilities()
+    GetCapabilities()
     #DebugCapabilities()
-    #GetFiles('_meta.json')
+    GetFiles('_meta.json',last=15)
     MergeMeta()
