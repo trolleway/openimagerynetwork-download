@@ -117,6 +117,7 @@ def GetFiles(endswith='_meta.json', last=0):
                 #bar.next()
         bar.finish()   
 def MergeFoorprints():
+    #deprecated function for merging footprint.json files - they provided for not all scenes
     counter = 0
     temp_dir = 'files'
     import json
@@ -205,6 +206,7 @@ def MergeFoorprints():
         
         
 def MergeMeta():
+    #merge files "meta" into csv with polygon
     counter = 0
     temp_dir = 'files'
     import json
@@ -262,8 +264,10 @@ def MergeMeta():
         bar = Bar('Merging OAM footprints', max=keys_count, suffix='%(index)d/%(max)d - %(percent).1f%% - %(eta)ds')
         for element in bucket_contents:
 
-            #rint key
             if element['Key'].endswith('_meta.json'):
+                if os.path.isfile(fname) == False:
+                    bar.next()
+                    continue
                 with open(os.path.join(temp_dir,element['Key'])) as jsonfile:
                     counter = counter + 1
                     if counter < start_record:
