@@ -29,7 +29,9 @@ time python %(prog)s --last 15
 return parser
 
     
-def GetCapabilities():
+def GetCapabilities(storage=''):
+    
+    
 
     bucket_contents = list()
     
@@ -63,7 +65,7 @@ def GetCapabilities():
     
     print len(bucket_contents)
     
-    with open("bucket_contents.file", "wb") as f:
+    with open(os.path.join(storage,"bucket_contents.file"), "wb") as f:
         pickle.dump(bucket_contents, f, pickle.HIGHEST_PROTOCOL)
 
 def DebugCapabilities():
@@ -72,7 +74,7 @@ def DebugCapabilities():
     temp_dir = 'files'
     counter = 0
     
-    with open("bucket_contents.file", "rb") as f:
+    with open(os.path.join(storage,"bucket_contents.file"), "rb") as f:
         bucket_contents = pickle.load(f)
         
         
@@ -86,13 +88,13 @@ def DebugCapabilities():
         print keys_count
 
                 
-def GetFiles(endswith='_meta.json', last=0):
+def GetFiles(endswith='_meta.json', last=0, storage=''):
     
     base_url = 'http://oin-hotosm.s3.amazonaws.com/'
     temp_dir = 'files'
     counter = 0
     
-    with open("bucket_contents.file", "rb") as f:
+    with open(os.path.join(storage,"bucket_contents.file"), "rb") as f:
         bucket_contents = pickle.load(f)
         
         
@@ -108,8 +110,8 @@ def GetFiles(endswith='_meta.json', last=0):
             #rint key
             if element['Key'].endswith(endswith):
                 footprint_url = base_url+element['Key']
-                footprint_filepath = os.path.join(temp_dir,element['Key'])
-                footprint_filepath = footprint_filepath.replace('/', os.sep)
+                footprint_filepath = os.path.join(storage,temp_dir,element['Key'])
+                footprint_filepath = footprint_filepath.replace('/', os.sep) #slash symbols become from S3 key
 
                 #print footprint_url
                 #print footprint_filepath
@@ -225,22 +227,22 @@ def MergeFoorprints():
         
         
         
-def MergeMeta():
+def MergeMeta(storage=''):
     #merge files "meta" into csv with polygon
     counter = 0
-    temp_dir = 'files'
+    temp_dir = os.path.join(storage,'files')
     import json
     
     base_url = 'http://oin-hotosm.s3.amazonaws.com/'
 
 
-    footprints_filename = 'footprints.geojson'
+    footprints_filename = os.path.join(storage,'footprints.geojson')
     if os.path.exists(footprints_filename):
       os.remove(footprints_filename)
 
   
     
-    with open("bucket_contents.file", "rb") as f:
+    with open(os.path.join(storage,"bucket_contents.file"), "rb") as f:
         bucket_contents = pickle.load(f)
         #calculate count of meta files for progressbar
         keys_count = 0
@@ -256,7 +258,7 @@ def MergeMeta():
         end_record = float('Inf')
         
         import unicodecsv as csv
-        csvfile = open('footprints.csv', "wb")
+        csvfile = open(os,path.join(storage,'footprints.csv'), "wb")
 
         spamwriter = csv.writer(csvfile, delimiter=',',
                             quotechar='"', quoting=csv.QUOTE_MINIMAL,encoding='utf-8')
@@ -285,7 +287,7 @@ def MergeMeta():
         for element in bucket_contents:
 
             if element['Key'].endswith('_meta.json'):
-                if os.path.isfile(fname) == False:
+                if os.path.isfile(os.path.join(temp_dir,element['Key'])) == False:
                     bar.next()
                     continue
                 with open(os.path.join(temp_dir,element['Key'])) as jsonfile:
@@ -336,7 +338,10 @@ def MergeMeta():
         csvfile.close()
 
 if __name__ == '__main__':
-    GetCapabilities()
+    parser = argparser_prepare()
+    args = parser.parse_args()
+    
+    GetCapabilities(storage=args.storage)
     #DebugCapabilities()
-    GetFiles('_meta.json',last=15)
-    MergeMeta()
+    GetFiles('_meta.json',last=15,storage=args.storage)
+    MergeMeta(storage=args.storage)
