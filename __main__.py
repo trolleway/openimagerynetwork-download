@@ -1,5 +1,5 @@
 
-import argparse, os
+import os
 import untangle
 import cPickle as pickle
 import urllib
@@ -7,6 +7,26 @@ from progress.bar import Bar
 import time
 
 
+import argparse
+def argparser_prepare():
+
+    class PrettyFormatter(argparse.ArgumentDefaultsHelpFormatter,
+        argparse.RawDescriptionHelpFormatter):
+
+        max_help_position = 45
+
+    parser = argparse.ArgumentParser(description='''Download foorptints and metadata of OpenImageryNetwork scenes from Amazon s3 ''',
+            formatter_class=PrettyFormatter)
+    parser.add_argument('--storage', default='', help = 'Path to storage location.')
+    parser.add_argument('--last', default='0',help = 'process only this most recent number of scenes')
+
+    parser.epilog = \
+        '''Samples: 
+
+time python %(prog)s --last 15
+''' \
+        % {'prog': parser.prog}
+return parser
 
     
 def GetCapabilities():
