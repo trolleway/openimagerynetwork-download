@@ -20,11 +20,20 @@ id -nG
 Using Docker 
 
 ```
-mkdir oadm_data
+
 docker build github.com/trolleway/openimagerynetwork-download --tag oadm
 
 #create volume
 docker volume create oadm_data
+
+#mount with bind, for debug and filezilla
+mkdir oadm_data
+docker run -it  \
+  --name oadm20 \
+  --mount type=bind,source=$(pwd)/oadm_data,target=/openimagerynetwork-download/files \
+  oadm
+  
+#mount with volume for production
 docker run -it  \
   --name oadm20 \
   --mount type=volume,source=oadm_data,target=/openimagerynetwork-download/files \
@@ -46,5 +55,6 @@ docker volume prune
 ```
 
 ```
-ogr2ogr  -oo GEOM_POSSIBLE_NAMES=footprint -oo KEEP_GEOM_COLUMNS=NO  files/footprints.geojson files/footprints.csv
+rm files/footprints.geojson
+ogr2ogr -oo GEOM_POSSIBLE_NAMES=footprint -oo KEEP_GEOM_COLUMNS=NO -s_srs EPSG:4326 -t_srs EPSG:3857 files/footprints.geojson files/footprints.csv
 ```
