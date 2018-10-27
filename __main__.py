@@ -28,7 +28,7 @@ def argparser_prepare():
 time python %(prog)s --last 15
 ''' \
         % {'prog': parser.prog}
-return parser
+    return parser
 
     
 def GetCapabilities(storage=''):
@@ -260,7 +260,7 @@ def MergeMeta(storage=''):
         end_record = float('Inf')
         
         import unicodecsv as csv
-        csvfile = open(os,path.join(storage,'footprints.csv'), "wb")
+        csvfile = open(os.path.join(storage,'footprints.csv'), "wb")
 
         spamwriter = csv.writer(csvfile, delimiter=',',
                             quotechar='"', quoting=csv.QUOTE_MINIMAL,encoding='utf-8')
@@ -287,12 +287,11 @@ def MergeMeta(storage=''):
 
         bar = Bar('Merging OAM footprints', max=keys_count, suffix='%(index)d/%(max)d - %(percent).1f%% - %(eta)ds')
         for element in bucket_contents:
-
             if element['Key'].endswith('_meta.json'):
-                if os.path.isfile(os.path.join(temp_dir,element['Key'])) == False:
+                if os.path.isfile(os.path.join(storage,element['Key'])) == False:
                     bar.next()
                     continue
-                with open(os.path.join(temp_dir,element['Key'])) as jsonfile:
+                with open(os.path.join(storage,element['Key'])) as jsonfile:
                     counter = counter + 1
                     if counter < start_record:
                        bar.next()
@@ -307,15 +306,12 @@ def MergeMeta(storage=''):
                         
                     #if 1==1: 
                     if data['footprint'] == float('Inf'):
-                        print "\n signal"
                         print str(data['features'][0]['geometry']['coordinates'][0][0][0]).isdigit
                         
                         bar.next()
-                        #quit()
                         continue
 
-                    #print data
-                    print data.get('uploaded_at')
+
                     spamwriter.writerow([counter,data['uuid'],data['title'],
                     str(footprint),
                     data['gsd'],
