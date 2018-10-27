@@ -20,7 +20,7 @@ def argparser_prepare():
     parser = argparse.ArgumentParser(description='''Download foorptints and metadata of OpenImageryNetwork scenes from Amazon s3 ''',
             formatter_class=PrettyFormatter)
     parser.add_argument('--storage', help = 'Path to storage location. Used like www folder in webserver. ')
-    parser.add_argument('--last', default='0',help = 'process only this most recent number of scenes')
+    parser.add_argument('--last', default=0,help = 'process only this most recent number of scenes')
 
     parser.epilog = \
         '''Samples: 
