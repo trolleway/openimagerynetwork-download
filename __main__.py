@@ -341,5 +341,5 @@ if __name__ == '__main__':
     
     GetCapabilities(storage=args.storage)
     #DebugCapabilities()
-    GetFiles('_meta.json',last=15,storage=args.storage)
+    GetFiles('_meta.json',last=args.last,storage=args.storage)
     MergeMeta(storage=args.storage)
