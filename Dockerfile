@@ -14,5 +14,5 @@ RUN git clone https://github.com/trolleway/openimagerynetwork-download.git
 WORKDIR openimagerynetwork-download
 
 RUN pip install -r requirements.txt
-CMD ["server.sh"]
+CMD ["./server.sh"]
 
