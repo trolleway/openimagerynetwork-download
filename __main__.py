@@ -125,7 +125,7 @@ def GetFiles(endswith='_meta.json', last=0, storage=''):
                 if not os.path.isfile(footprint_filepath): 
                     counter = counter + 1
                     if (last <> 0): 
-                        if (counter < (keys_count - last)):
+                        if (int(counter) < (int(keys_count) - int(last)):
                             bar.next()
                             continue
                     while True:
