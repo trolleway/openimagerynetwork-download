@@ -7,8 +7,8 @@ git \
 software-properties-common
 RUN pip install --upgrade pip
 RUN sudo apt-add-repository -y ppa:nextgis/ppa
-sudo apt-get update
-sudo apt-get install gdal-bin python-gdal
+RUN apt-get update
+RUN apt-get install gdal-bin python-gdal
 
 RUN git clone https://github.com/trolleway/openimagerynetwork-download.git
 WORKDIR openimagerynetwork-download

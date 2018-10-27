@@ -38,6 +38,7 @@ in container: python __main__.py --storage files --last 55
 #rm all
 docker container stop oadm20
 docker container rm oadm20
+
 docker volume rm oadm_data
 
 #To remove all unused volumes and free up space:s
