@@ -8,6 +8,8 @@ import time
 
 
 import argparse
+
+temp_dir = 'files'
 def argparser_prepare():
 
     class PrettyFormatter(argparse.ArgumentDefaultsHelpFormatter,
@@ -17,7 +19,7 @@ def argparser_prepare():
 
     parser = argparse.ArgumentParser(description='''Download foorptints and metadata of OpenImageryNetwork scenes from Amazon s3 ''',
             formatter_class=PrettyFormatter)
-    parser.add_argument('--storage', help = 'Path to storage location.')
+    parser.add_argument('--storage', help = 'Path to storage location. Used like www folder in webserver. ')
     parser.add_argument('--last', default='0',help = 'process only this most recent number of scenes')
 
     parser.epilog = \
@@ -110,7 +112,7 @@ def GetFiles(endswith='_meta.json', last=0, storage=''):
             #rint key
             if element['Key'].endswith(endswith):
                 footprint_url = base_url+element['Key']
-                footprint_filepath = os.path.join(storage,temp_dir,element['Key'])
+                footprint_filepath = os.path.join(storage,element['Key'])
                 footprint_filepath = footprint_filepath.replace('/', os.sep) #slash symbols become from S3 key
 
                 #print footprint_url
