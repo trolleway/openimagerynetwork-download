@@ -6,7 +6,7 @@ python-pip \
 git \
 software-properties-common
 RUN pip install --upgrade pip
-RUN sudo apt-add-repository -y ppa:nextgis/ppa
+RUN apt-add-repository -y ppa:nextgis/ppa
 RUN apt-get update
 RUN apt-get install gdal-bin python-gdal
 
