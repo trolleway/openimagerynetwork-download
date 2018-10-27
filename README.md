@@ -47,6 +47,7 @@ in container: python __main__.py --storage files --last 55
 #rm all
 docker container stop oadm20
 docker container rm oadm20
+#or docker rm $(docker ps -a -q)
 
 docker volume rm oadm_data
 
