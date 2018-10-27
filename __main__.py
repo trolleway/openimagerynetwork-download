@@ -106,7 +106,8 @@ def GetFiles(endswith='_meta.json', last=0, storage=''):
         for element in bucket_contents:
             if element['Key'].endswith(endswith):
                 keys_count = keys_count + 1
-
+                
+        print 'Found {keys_count} files to download. If they exist in local cache, download will skipped'.format(keys_count=keys_count)
         bar = Bar('Download OAM footprints', max=keys_count, suffix='%(index)d/%(max)d - %(percent).1f%% - %(eta)ds')
         for element in bucket_contents:
             #rint key
@@ -123,9 +124,10 @@ def GetFiles(endswith='_meta.json', last=0, storage=''):
                     os.makedirs(directory)
                 if not os.path.isfile(footprint_filepath): 
                     counter = counter + 1
-                    if (last > 0) and (counter < (keys_count - last)):
-                        bar.next()
-                        continue
+                    if (last <> 0) 
+                        if (counter < (keys_count - last)):
+                            bar.next()
+                            continue
                     while True:
                         try:
                             urllib.urlretrieve(footprint_url, footprint_filepath)
