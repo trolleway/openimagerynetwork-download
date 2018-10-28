@@ -21,7 +21,7 @@ Using Docker
 
 ```
 
-docker build --no-cache github.com/trolleway/openimagerynetwork-download --tag oadm
+docker build  github.com/trolleway/openimagerynetwork-download --no-cache --tag oadm
 
 #create volume
 docker volume create oadm_data
