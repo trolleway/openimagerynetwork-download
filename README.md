@@ -21,6 +21,13 @@ Using Docker
 
 ```
 
+cat > config.env << EOF
+NEXTGISCOM_INSTANCE_URL=http://demo.nextgis.com
+NEXTGISCOM_VECTOR_LAYER_ID=3029
+NEXTGISCOM_LOGIN=administrator
+NEXTGISCOM_PASSWORD=admin
+EOF
+
 docker build  github.com/trolleway/openimagerynetwork-download --no-cache --tag oadm
 
 #create volume
