@@ -31,6 +31,7 @@ mkdir oadm_data
 docker run -it  \
   --name oadm20 \
   --mount type=bind,source=$(pwd)/oadm_data,target=/openimagerynetwork-download/files \
+  --env-file config.env
   oadm
   
 #mount with volume for production
