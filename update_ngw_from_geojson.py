@@ -27,7 +27,7 @@ import urllib
 import zipfile
 import sys
 import requests
-import pprint
+
 import json
 
 import argparse
@@ -165,10 +165,6 @@ class NGWSynchroniser:
 
     def compareFeatures(self,ngw_feature, wfs_feature):
         # compare attributes
-        #pp = pprint.PrettyPrinter()       
-        #pp.pprint(ngw_feature)
-        #pp.pprint(wfs_feature)
-        #quit()
 
         ngw_fields = ngw_feature['fields']
         wfs_fields = wfs_feature['fields']
@@ -313,8 +309,7 @@ class NGWSynchroniser:
         if wfs not in ngw: post to ngw (create)
         
         '''
-        import pprint
-        pp = pprint.PrettyPrinter()       
+  
 
 
         #sort ngw_result
