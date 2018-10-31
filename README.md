@@ -62,8 +62,85 @@ docker volume rm oadm_data
 #To remove all unused volumes and free up space:s
 docker volume prune
 ```
+создание слоя в ngw через api, потому что через веб-интерфейс он делает поля типа datetime, а с ними не работает мой скрипт синхронизации
+```
 
+{
+"resource":{
+    "cls":"vector_layer",
+    "parent":{
+        "id":0
+    },
+    "display_name":"Footprints",
+    "keyname":null,
+    "description":"Automatically updated by script openimagerynetwork-download"
+},
+"resmeta":{
+    "items":{
+
+    }
+},
+"vector_layer":{
+    "srs":{ "id":3857 },
+    "geometry_type": "MULTIPOLYGON",
+    "fields": [
+        {
+            "keyname": "counter",
+            "datatype": "STRING"
+        },
+                {
+            "keyname": "uuid",
+            "datatype": "STRING"
+        },
+                {
+            "keyname": "title",
+            "datatype": "STRING"
+        },
+                {
+            "keyname": "gsd",
+            "datatype": "STRING"
+        },
+                {
+            "keyname": "file_size",
+            "datatype": "STRING"
+        },
+                {
+            "keyname": "platform",
+            "datatype": "STRING"
+        },
+                {
+            "keyname": "provider",
+            "datatype": "STRING"
+        },
+                {
+            "keyname": "contact",
+            "datatype": "STRING"
+        },
+                        {
+            "keyname": "properties.sensor",
+            "datatype": "STRING"
+        },
+                        {
+            "keyname": "properties.thumbnail",
+            "datatype": "STRING"
+        },
+                        {
+            "keyname": "properties.tms",
+            "datatype": "STRING"
+        },
+                        {
+            "keyname": "properties.wmts",
+            "datatype": "STRING"
+        },
+                {
+            "keyname": "uploaded_at",
+            "datatype": "STRING"
+        },
+    ]
+}
+}
+
+
+,,,,,,,,
 ```
-rm files/footprints.geojson
-ogr2ogr -oo GEOM_POSSIBLE_NAMES=footprint -oo KEEP_GEOM_COLUMNS=NO -s_srs EPSG:4326 -t_srs EPSG:3857 files/footprints.geojson files/footprints.csv
-```
+
