@@ -43,18 +43,20 @@ def GetCapabilities(storage=''):
     #get list of files
     step=0
     last_key = ''
+    bar = Bar('Get list of S3 bucket content', max_value=progressbar.UnknownLength, suffix='%(index)d/%(max)d - %(percent).1f%% - %(eta)ds')
     
     while True:
         step = step + 1
+        bar.next()
         url='http://oin-hotosm.s3.amazonaws.com/?list-type=2'
         print step
         if step > 1:
             url = url + '&start-after='+last_key
             
-        print url    
+        #print url    
         response = urlopen(url).read()
         response_dict = untangle.parse(urlopen(url))    
-        print response_dict.ListBucketResult.Name.cdata
+        #print response_dict.ListBucketResult.Name.cdata
         for element in response_dict.ListBucketResult.Contents:
             new_element = dict()
             new_element['Key'] = element.Key.cdata
@@ -64,8 +66,8 @@ def GetCapabilities(storage=''):
         IsTruncated = response_dict.ListBucketResult.IsTruncated.cdata
         if IsTruncated == 'false':
             break
-    
-    print len(bucket_contents)
+    bar.finish()
+    print 'Files in bucket: ' + str(len(bucket_contents))
     
     with open(os.path.join(storage,"bucket_contents.file"), "wb") as f:
         pickle.dump(bucket_contents, f, pickle.HIGHEST_PROTOCOL)
