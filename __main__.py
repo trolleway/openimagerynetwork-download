@@ -38,16 +38,17 @@ def GetCapabilities(storage=''):
     bucket_contents = list()
     
     from urllib import urlopen
-
+    from progress.spinner import Spinner
     
     #get list of files
     step=0
     last_key = ''
-    bar = Bar('Get list of S3 bucket content', max_value=progressbar.UnknownLength, suffix='%(index)d/%(max)d - %(percent).1f%% - %(eta)ds')
+    spinner = Spinner('Get list of S3 bucket content')
+   
     
     while True:
         step = step + 1
-        bar.next()
+        spinner.next()
         url='http://oin-hotosm.s3.amazonaws.com/?list-type=2'
         print step
         if step > 1:
@@ -66,7 +67,7 @@ def GetCapabilities(storage=''):
         IsTruncated = response_dict.ListBucketResult.IsTruncated.cdata
         if IsTruncated == 'false':
             break
-    bar.finish()
+
     print 'Files in bucket: ' + str(len(bucket_contents))
     
     with open(os.path.join(storage,"bucket_contents.file"), "wb") as f:
