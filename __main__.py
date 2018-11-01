@@ -50,7 +50,7 @@ def GetCapabilities(storage=''):
         step = step + 1
         spinner.next()
         url='http://oin-hotosm.s3.amazonaws.com/?list-type=2'
-        print step
+        
         if step > 1:
             url = url + '&start-after='+last_key
             
