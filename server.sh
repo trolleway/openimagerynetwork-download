@@ -7,6 +7,7 @@ ogr2ogr -oo GEOM_POSSIBLE_NAMES=footprint \
   -fieldTypeToString All\
   -s_srs EPSG:4326 -t_srs EPSG:3857\
   -nlt PROMOTE_TO_MULTI\
+  -lco COORDINATE_PRECISION=8 \
   files/footprints.geojson files/footprints.csv
 python update_ngw_from_geojson.py --ngw_url "$NEXTGISCOM_INSTANCE_URL"\
  --ngw_resource_id "$NEXTGISCOM_VECTOR_LAYER_ID"\
