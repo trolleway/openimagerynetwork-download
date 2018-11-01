@@ -28,13 +28,14 @@ NEXTGISCOM_LOGIN=administrator
 NEXTGISCOM_PASSWORD=admin
 EOF
 
+mkdir oadm_data #if mount with bind
+
 docker build  github.com/trolleway/openimagerynetwork-download --no-cache --tag oadm
 
 #create volume
 docker volume create oadm_data
 
 #mount with bind, for debug and filezilla
-mkdir oadm_data
 docker run -it  \
   --name oadm20 \
   --mount type=bind,source=$(pwd)/oadm_data,target=/openimagerynetwork-download/files \
