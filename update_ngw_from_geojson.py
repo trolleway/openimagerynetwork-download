@@ -293,6 +293,8 @@ class NGWSynchroniser:
 
         return ngw_result_sorted
 
+
+        
     def synchronize(self,wfs_result, ngw_result, check_field):
 
         # compare wfs_result and ngw_result
@@ -359,7 +361,8 @@ class NGWSynchroniser:
                 req = requests.post(self.ngw_url + str(self.resid) + '/feature/', data=json.dumps(payload), auth=self.ngw_creds)
                 message = 'add new feature #' + str(wfs_id)  + ' ' + str(req)
             self.progress(cnt, max_cnt, message) 
-    
+
+
 
 if __name__ == '__main__':
 
