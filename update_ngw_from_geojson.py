@@ -75,6 +75,7 @@ class NGWSynchroniser:
 
         self.ForceToMultiGeom = False #Не знаю, нужно ли?
         self.delta = 0.00000001 #Using in compare points 
+        self.delta = 0.00001 #Using in compare points 
         self.ngw_url = cfg['ngw_url']+'/api/resource/'
         self.resid=cfg['ngw_resource_id']
         self.ngw_creds = (cfg['ngw_login'], cfg['ngw_password'])
@@ -105,12 +106,11 @@ class NGWSynchroniser:
         return (abs(ngw_pt[0] - wfs_pt[0]) < self.delta) and (abs(ngw_pt[1] - wfs_pt[1]) < self.delta)
         
     def compareLines(self,ngw_line, wfs_line):
-        if ngw_line.GetPointCount() != wfs_line.GetPointCount():
+        if ngw_line.GetPointCount() != wfs_line.GetPointCount():          
             return False
         for i in range(ngw_line.GetPointCount()):
             
-
-            if not self.comparePoints(ngw_line.GetPoint(i), wfs_line.GetPoint(i)):
+            if not self.comparePoints(ngw_line.GetPoint(i), wfs_line.GetPoint(i)):                
                 return False
             
         return True
@@ -119,15 +119,11 @@ class NGWSynchroniser:
         ngw_poly_rings = ngw_poly.GetGeometryCount()
         wfs_poly_rings = wfs_poly.GetGeometryCount()
         if ngw_poly_rings != wfs_poly_rings:
-            return False
+             return False
 
         for i in range(ngw_poly_rings):
             if not self.compareLines(ngw_poly.GetGeometryRef(i), wfs_poly.GetGeometryRef(i)):
                 return False 
-
-
-
-
 
         for i in range(ngw_poly.GetPointCount()):
             if not self.comparePoints(ngw_poly.GetGeometryRef(i), wfs_poly.GetGeometryRef(i)):
@@ -136,6 +132,7 @@ class NGWSynchroniser:
         return True                 
         
     def compareGeom(self,ngw_geom, wfs_geom):  
+        debug = True
 
         if ngw_geom.GetGeometryCount() <> wfs_geom.GetGeometryCount():
             return False    #Diffirent geometry count
