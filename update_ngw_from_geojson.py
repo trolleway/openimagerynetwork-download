@@ -361,7 +361,6 @@ class NGWSynchroniser:
             self.progress(cnt, max_cnt, message) 
     
 
-
 if __name__ == '__main__':
 
     parser = argparser_prepare()
